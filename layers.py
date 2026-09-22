@@ -1,3 +1,5 @@
+import numpy as np
+
 class BaseLayer:
     def forward(self, inputs):
         raise NotImplementedError
@@ -41,6 +43,10 @@ class ActivationLayer(BaseLayer):
         return self.output
 
     def backward(self, grad_output):
+        # Optimizer.train() passes (softmax_output - y) as grad_output, which is
+        # already the simplified gradient of combined softmax + cross-entropy
+        # w.r.t. the pre-softmax logits, so it must pass through unchanged here.
+        # Applying the softmax Jacobian on top of it would double-differentiate.
         if self.activation.__name__ == 'softmax':
-            return np.einsum('ijk,ik->ij', softmax_derivative(self.output), grad_output)
+            return grad_output
         return grad_output * self.derivative(self.inputs)

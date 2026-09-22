@@ -1,5 +1,7 @@
 import numpy as np
 
+from layers import DenseLayer
+
 class BaseANN:
     def __init__(self):
         self.layers = []
