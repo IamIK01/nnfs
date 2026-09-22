@@ -17,8 +17,11 @@ class InputLayer(BaseLayer):
 class DenseLayer(BaseLayer):
     
     def __init__(self, input_size, output_size):
-        self.weights = np.random.randn(input_size, output_size) * 0.1
-        self.biases = np.random.randn(1, output_size) * 0.1
+        # He init: a fixed *0.1 scale starves the signal once layers stack,
+        # so scale by fan-in instead (sqrt(2/n) suits the ReLU layers this
+        # feeds into; softmax output layers still train fine with it).
+        self.weights = np.random.randn(input_size, output_size) * np.sqrt(2 / input_size)
+        self.biases = np.zeros((1, output_size))
 
     def forward(self, inputs):
         self.inputs = inputs

@@ -29,16 +29,10 @@ def make_spiral(points_per_class=100, classes=3, noise=0.2, seed=0):
 
 
 def build_model(hidden_size=16):
-    # DenseLayer's built-in init (randn * 0.1, fixed regardless of layer width)
-    # leaves too little signal variance flowing through three stacked layers,
-    # so weights are re-drawn here with a He scale (randn * sqrt(2 / fan_in))
-    # sized to each layer's input width instead.
     model = BaseANN()
     sizes = [2, hidden_size, hidden_size, 3]
     for i in range(len(sizes) - 1):
-        layer = DenseLayer(sizes[i], sizes[i + 1])
-        layer.weights = np.random.randn(sizes[i], sizes[i + 1]) * np.sqrt(2 / sizes[i])
-        model.add(layer)
+        model.add(DenseLayer(sizes[i], sizes[i + 1]))
         is_output = i == len(sizes) - 2
         model.add(ActivationLayer(softmax, None) if is_output else ActivationLayer(relu, relu_derivative))
     return model
